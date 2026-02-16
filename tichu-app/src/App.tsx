@@ -208,9 +208,7 @@ const soundCards: SoundCard[] = [
 const App = () => {
   return (
     <div className="main-view">
-      <header className="header">
-        <h1>Tichu Soundboard</h1>
-      </header>
+      <header className="header"></header>
 
       <section className="sound-grid" aria-label="Sound actions">
         {soundCards.map((card) => (
