@@ -1,3 +1,5 @@
+import "./App.css";
+
 import bomb1File from "./sounds/bombs/LaBomba.mp3";
 import bomb2File from "./sounds/bombs/Boombastic.mp3";
 
@@ -45,60 +47,87 @@ const streetSounds = [street1];
 
 let audio = new Audio(undefined);
 
-const playBomb = () => {
+type Palette = {
+  start: string;
+  end: string;
+};
+
+type SoundCard = {
+  id: string;
+  label: string;
+  icon: string;
+  palette: Palette;
+  play: () => void;
+};
+
+const imageCache = new Map<string, string>();
+
+const playRandomSound = (soundFiles: string[]) => {
   stopSound();
-  const randomIndex = getRandomIndex(bombSounds.length);
-  audio = new Audio(bombSounds[randomIndex]);
+  const randomIndex = getRandomIndex(soundFiles.length);
+  audio = new Audio(soundFiles[randomIndex]);
   audio.play();
+};
+
+const getCardImage = (label: string, icon: string, palette: Palette) => {
+  const cacheKey = `${label}-${icon}-${palette.start}-${palette.end}`;
+
+  const cachedImage = imageCache.get(cacheKey);
+  if (cachedImage) {
+    return cachedImage;
+  }
+
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
+      <defs>
+        <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="${palette.start}" />
+          <stop offset="100%" stop-color="${palette.end}" />
+        </linearGradient>
+      </defs>
+      <rect width="640" height="360" rx="36" fill="url(#bg)" />
+      <circle cx="320" cy="140" r="76" fill="rgba(255,255,255,0.2)" />
+      <text x="320" y="165" text-anchor="middle" font-size="96">${icon}</text>
+      <text x="320" y="280" text-anchor="middle" fill="#ffffff" font-size="52" font-family="Arial, Helvetica, sans-serif" font-weight="700">${label}</text>
+    </svg>
+  `;
+
+  const image = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+  imageCache.set(cacheKey, image);
+
+  return image;
+};
+
+const playBomb = () => {
+  playRandomSound(bombSounds);
 };
 
 const playDog = () => {
-  stopSound();
-  const randomIndex = getRandomIndex(dogSounds.length);
-  audio = new Audio(dogSounds[randomIndex]);
-  audio.play();
+  playRandomSound(dogSounds);
 };
 
 const playDragon = () => {
-  stopSound();
-  const randomIndex = getRandomIndex(dragonSounds.length);
-  audio = new Audio(dragonSounds[randomIndex]);
-  audio.play();
+  playRandomSound(dragonSounds);
 };
 
 const playPhenix = () => {
-  stopSound();
-  const randomIndex = getRandomIndex(phenixSounds.length);
-  audio = new Audio(phenixSounds[randomIndex]);
-  audio.play();
+  playRandomSound(phenixSounds);
 };
 
 const playFail = () => {
-  stopSound();
-  const randomIndex = getRandomIndex(failSounds.length);
-  audio = new Audio(failSounds[randomIndex]);
-  audio.play();
+  playRandomSound(failSounds);
 };
 
 const playTension = () => {
-  stopSound();
-  const randomIndex = getRandomIndex(tensionSounds.length);
-  audio = new Audio(tensionSounds[randomIndex]);
-  audio.play();
+  playRandomSound(tensionSounds);
 };
 
 const playVictory = () => {
-  stopSound();
-  const randomIndex = getRandomIndex(victorySounds.length);
-  audio = new Audio(victorySounds[randomIndex]);
-  audio.play();
+  playRandomSound(victorySounds);
 };
 
 const playStreet = () => {
-  stopSound();
-  const randomIndex = getRandomIndex(streetSounds.length);
-  audio = new Audio(streetSounds[randomIndex]);
-  audio.play();
+  playRandomSound(streetSounds);
 };
 
 const stopSound = () => {
@@ -110,37 +139,103 @@ const getRandomIndex = (maxIndex: number) => {
   return Math.floor(Math.random() * maxIndex);
 };
 
+const soundCards: SoundCard[] = [
+  {
+    id: "bomb",
+    label: "Bombe",
+    icon: "💣",
+    palette: { start: "#f97316", end: "#dc2626" },
+    play: playBomb,
+  },
+  {
+    id: "dog",
+    label: "Hund",
+    icon: "🐕",
+    palette: { start: "#0ea5e9", end: "#2563eb" },
+    play: playDog,
+  },
+  {
+    id: "dragon",
+    label: "Drache",
+    icon: "🐉",
+    palette: { start: "#84cc16", end: "#15803d" },
+    play: playDragon,
+  },
+  {
+    id: "phenix",
+    label: "Phönix",
+    icon: "🔥",
+    palette: { start: "#f59e0b", end: "#ec4899" },
+    play: playPhenix,
+  },
+  {
+    id: "street",
+    label: "Strass",
+    icon: "🏙️",
+    palette: { start: "#64748b", end: "#334155" },
+    play: playStreet,
+  },
+  {
+    id: "tension",
+    label: "Spannend",
+    icon: "⚡",
+    palette: { start: "#a855f7", end: "#7e22ce" },
+    play: playTension,
+  },
+  {
+    id: "fail",
+    label: "Autsch",
+    icon: "💥",
+    palette: { start: "#ef4444", end: "#7f1d1d" },
+    play: playFail,
+  },
+  {
+    id: "victory",
+    label: "Bravo",
+    icon: "🏆",
+    palette: { start: "#22c55e", end: "#0f766e" },
+    play: playVictory,
+  },
+  {
+    id: "stop",
+    label: "Ruäh!!!",
+    icon: "🛑",
+    palette: { start: "#6b7280", end: "#111827" },
+    play: stopSound,
+  },
+];
+
 const App = () => {
   return (
     <div className="main-view">
-      <h1>My App</h1>
-      <div>
-        <button onClick={playBomb}>Bombe</button>
-      </div>
-      <div>
-        <button onClick={playDog}>Hund</button>
-      </div>
-      <div>
-        <button onClick={playDragon}>Drache</button>
-      </div>
-      <div>
-        <button onClick={playPhenix}>Phönix</button>
-      </div>
-      <div>
-        <button onClick={playStreet}>Strass</button>
-      </div>
-      <div>
-        <button onClick={playTension}>Huii spannend</button>
-      </div>
-      <div>
-        <button onClick={playFail}>Autsch</button>
-      </div>
-      <div>
-        <button onClick={playVictory}>Bravo</button>
-      </div>
-      <div>
-        <button onClick={stopSound}>Ruäh!!!</button>
-      </div>
+      <header className="header">
+        <h1>Tichu Soundboard</h1>
+      </header>
+
+      <section className="sound-grid" aria-label="Sound actions">
+        {soundCards.map((card) => (
+          <div
+            key={card.id}
+            className="sound-card"
+            role="button"
+            tabIndex={0}
+            aria-label={card.label}
+            onClick={card.play}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                card.play();
+              }
+            }}
+          >
+            <img
+              className="sound-image"
+              src={getCardImage(card.label, card.icon, card.palette)}
+              alt={card.label}
+            />
+          </div>
+        ))}
+      </section>
     </div>
   );
 };
