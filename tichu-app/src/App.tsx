@@ -171,13 +171,13 @@ const soundCards: SoundCard[] = [
   {
     id: "street",
     label: "Strass",
-    icon: "🏙️",
+    icon: "🚗",
     palette: { start: "#64748b", end: "#334155" },
     play: playStreet,
   },
   {
     id: "tension",
-    label: "Spannend",
+    label: "Spanig",
     icon: "⚡",
     palette: { start: "#a855f7", end: "#7e22ce" },
     play: playTension,
